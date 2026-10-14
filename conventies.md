@@ -126,12 +126,24 @@ Elke app-repo bevat: `<app>.html`, `index.html` (doorverwijzing),
   Vaste eisen:
   - alleen de cache lezen, geen netwerkverkeer;
   - pas 4 s na start, plus bij `visibilitychange`;
-  - eerst filteren op de eigen cache-prefix (`golf-score-`, `trends-`,
-    `events-`) — de cache is van het hele domein, dus de andere apps staan er
-    ook in — met terugval op alle caches;
-  - van alle treffers het NIEUWSTE stempel nemen en alleen melden bij
-    `>`, nooit bij `!==`: een blijven hangen oude cache zou anders melden dat
-    er een "nieuwe" versie is die juist ouder is;
+  - alleen de eigen cache-prefix (`golf-score-`, `trends-`, `events-`) — de
+    cache is van het hele domein, dus de andere apps staan er ook in. Geen
+    eigen cache betekent niets melden, en uitdrukkelijk GEEN terugval op alle
+    caches: trends heeft die terugval er juist uitgehaald, omdat anders een
+    kopie van een buurapp meebesliste over de melding;
+  - van alle eigen caches het NIEUWSTE stempel nemen, niet de hoogst
+    genummerde cache: dat nummer gaat alleen omhoog als de service worker zelf
+    wijzigt, dus het nieuwste stempel staat er niet per se in. Een afgebroken
+    installatie laat een lege huls met een hoger nummer achter, en daarop
+    verviel de melding. Trends en events doen dit zo. **Golf-score wijkt hier
+    bewust af**: die vraagt de actieve service worker om zijn eigen cachenaam
+    (het gezaghebbende antwoord, zonder netwerk) en valt alleen terug op de
+    eerste eigen cache die het bestand heeft;
+  - alleen melden bij `>`, nooit bij `!==`: een blijven hangen oude cache zou
+    anders melden dat er een "nieuwe" versie is die juist ouder is. Golf-score
+    toont in dat geval een eigen tekst ("verouderde kopie in het geheugen");
+  - een cache die niet te openen is of geen eigen bestand bevat, overslaan en
+    met de rest doorgaan — niet de hele zoektocht afbreken;
   - geen cache, of geopend als los bestand (`file:`): stil niets doen.
 - **Deelbaarheid:** een service worker onderschept alleen verzoeken binnen zijn
   eigen scope. Een gedeeld bestand uit een andere repo wordt dus niet gecachet
