@@ -183,6 +183,66 @@ def check_stempel(s):
     return m.group(1)
 
 
+def check_stempel_vergeten(pad, stempel):
+    """Is het app-bestand gewijzigd zonder dat het stempel omhoog ging?
+
+    Het stempel gaat met de hand omhoog, en dat is bewust: een script verhoogt
+    het ook bij een wijziging die niemand hoeft te zien, en dan staat er een
+    melding tegenover niets. De keerzijde is dat het vergeten kan worden, en
+    dan ziet de updatecontrole geen nieuwe versie en blijft de melding uit --
+    precies waarom trends het ophogen eerder had geautomatiseerd. Daarom hier
+    de controle in plaats van de automaat.
+
+    Twee momenten waarop het mis kan zijn:
+      * het bestand is gewijzigd maar nog niet gecommit (de gewone situatie als
+        je dit script draait);
+      * het is al gecommit zonder nieuw stempel (dan is HEAD de dader).
+
+    Alles aan git is best-effort: geen git, geen repo, geen vorige versie --
+    dan zegt deze controle niets. Nooit een FOUT, want een wijziging buiten de
+    app-bestanden hoort juist GEEN nieuw stempel te krijgen; het is een
+    waarschuwing om naar te kijken.
+    """
+    if not stempel or not shutil.which('git'):
+        return
+    map_ = os.path.dirname(os.path.abspath(pad))
+    naam = os.path.basename(pad)
+
+    def git(*args):
+        r = subprocess.run(['git', '-C', map_, *args],
+                           capture_output=True, text=True)
+        return r.stdout if r.returncode == 0 else None
+
+    prefix = git('rev-parse', '--show-prefix')
+    if prefix is None:
+        return
+    inrepo = prefix.strip() + naam
+
+    def stempel_in(ref):
+        t = git('show', f'{ref}:{inrepo}')
+        if t is None:
+            return None, None
+        m = re.search(r'Versie ([0-9A-F]+-[0-9A-F]+)\s*<', t)
+        return (m.group(1) if m else None), t
+
+    vuil = git('status', '--porcelain', '--', naam)
+    if vuil:
+        oud, tekst = stempel_in('HEAD')
+        if tekst is not None and oud == stempel:
+            waarschuwing(f'{naam} is gewijzigd maar het stempel staat nog op {stempel} '
+                         '— met de hand ophogen voor je commit')
+        return
+
+    # Werkmap schoon: dan kan de laatste commit het stempel vergeten zijn.
+    oud, tekst = stempel_in('HEAD~1')
+    if tekst is None:
+        return
+    nu = git('show', f'HEAD:{inrepo}')
+    if nu is not None and nu != tekst and oud == stempel:
+        waarschuwing(f'de laatste commit wijzigde {naam} maar liet het stempel op '
+                     f'{stempel} staan — een nieuwe versie wordt dan niet gemeld')
+
+
 def check_sw(s, pad):
     map_ = os.path.dirname(os.path.abspath(pad))
     appnaam = os.path.basename(pad)
@@ -284,6 +344,7 @@ def main():
     check_ids(s)
     check_handlers(s)
     stempel = check_stempel(s)
+    check_stempel_vergeten(pad, stempel)
     check_sw(s, pad)
     check_blokken(s, basis)
 
