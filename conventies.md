@@ -13,7 +13,15 @@ regels. Wat hieronder staat geldt voor alle drie, behalve waar bij
 
 - **Ontwerp eerst.** Bij niet-triviale wijzigingen eerst een voorstel, pas
   bouwen na akkoord. Bij een bouwtraject elke stap apart voorleggen.
-- **Versiestempel bij ELKE wijziging ophogen.** Handmatig, niet via een script.
+- **Versiestempel bij ELKE wijziging aan de app ophogen.** Handmatig, niet via
+  een script: een script verhoogt het stempel ook bij een wijziging die niemand
+  hoeft te zien, en dan staat er een nieuwe-versie-melding tegenover niets.
+  Een wijziging die niet in de app-bestanden landt (een losse test, een
+  leesmij, een hulpscript) krijgt dus géén nieuw stempel.
+  `check_app.py` is het vangnet: dat waarschuwt als het app-bestand is
+  gewijzigd terwijl het stempel nog op de oude waarde staat — vóór het
+  committen én als de laatste commit het heeft laten staan. Trends hoogde het
+  stempel daarom eerder via een script op; dat is er sinds dat vangnet uit.
 - **Er werken vaak parallelle sessies aan hetzelfde bestand.** Vóór een
   wijziging de huidige versie controleren, en na de patch verifiëren dat de
   wijziging er echt in staat.
