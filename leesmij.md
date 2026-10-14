@@ -9,7 +9,12 @@ Die regels staan in de repo **`apps-basis`**:
 - `conventies.md` — werkwijze, vaste regels, app-shell/PWA, bewuste verschillen
   tussen de apps, bekende valkuilen.
 - `check_app.py` — controleert een app tegen die conventies.
-- `blokken/` — referentieversies van gedeelde codeblokken.
+
+`check_app.py` kan ook gedeelde codeblokken vergelijken met een referentie in
+een map `blokken/`. Die map bestaat nog niet, en geen van de drie apps
+markeert een blok met `/* == basis: naam == */ … /* == einde basis == */`.
+De controle doet dus niets tot zo'n markering er wél staat; vanaf dat moment
+hoort er een `blokken/<naam>.js` naast te liggen.
 
 ## Voor je begint te wijzigen
 
@@ -20,9 +25,15 @@ Die regels staan in de repo **`apps-basis`**:
 
 ## Na een wijziging
 
-1. Versiestempel ophogen — bij **elke** wijziging.
+1. Versiestempel ophogen — bij **elke** wijziging aan de app zelf. Met de hand,
+   niet via een script. Een wijziging die niet in de app-bestanden landt (een
+   losse test, een leesmij) krijgt geen nieuw stempel: dat zou een
+   nieuwe-versie-melding geven voor een uitgave waarin voor de gebruiker niets
+   anders is.
 2. `python3 check_app.py <app>.html --basis <pad naar apps-basis>`
-3. Uploaden via de GitHub Android-app.
+3. Committen en pushen naar de eigen repo onder `mv-systems-apps`. Vanaf de
+   telefoon kan dat met de GitHub-app; het kan ook vanuit de sessie gebeuren,
+   en dan is er niets meer zelf te uploaden.
 
 ## Bestandsnamen
 

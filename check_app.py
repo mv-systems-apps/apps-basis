@@ -96,13 +96,46 @@ def check_js(s, pad):
 
 
 def check_ids(s):
-    ids = re.findall(r'\bid\s*=\s*["\']([^"\']+)["\']', s)
-    echt = [i for i in ids if '${' not in i and '+' not in i]
-    dubbel = sorted({i for i in echt if echt.count(i) > 1})
-    if dubbel:
-        fout('dubbele id\'s: ' + ', '.join(dubbel[:8]))
+    """Dubbele id's.
 
-    bekend = set(echt)
+    Twee gevallen die apart beoordeeld moeten worden:
+
+    * In de STATIEKE opmaak staan de elementen er allemaal tegelijk. Twee keer
+      hetzelfde id is daar altijd fout: document.getElementById pakt dan de
+      eerste en de tweede is onbereikbaar.
+    * In een SCRIPT staat een id vaak in een stuk HTML dat per toestand wordt
+      opgebouwd. Twee takken van dezelfde if-else dragen dan hetzelfde id,
+      terwijl er in de DOM nooit meer dan een van de twee staat. Dat is geen
+      fout, en het als fout melden maakte de hele uitvoer onbetrouwbaar: bij
+      events stonden fDl en fLink er zo in, terwijl ze in alle vijf de
+      toestanden precies een keer in de DOM staan.
+
+    Vandaar: statiek is een fout, uit een script is een waarschuwing met de
+    reden erbij, zodat het met het oog te beoordelen is.
+    """
+    def vaste_ids(tekst):
+        ids = re.findall(r'\bid\s*=\s*["\']([^"\']+)["\']', tekst)
+        return [i for i in ids if '${' not in i and '+' not in i]
+
+    def dubbelen(tekst):
+        echt = vaste_ids(tekst)
+        return sorted({i for i in echt if echt.count(i) > 1})
+
+    statiek = dubbelen(strip_code(s))
+    if statiek:
+        fout("dubbele id's in de statieke opmaak: " + ', '.join(statiek[:8]))
+
+    scripts = '\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', s, flags=re.S | re.I))
+    uit_script = [i for i in dubbelen(scripts) if i not in statiek]
+    if uit_script:
+        waarschuwing(
+            "id's die een script meer dan een keer opbouwt: " + ', '.join(uit_script[:8]) +
+            ' — dat hoort zo als het om elkaar uitsluitende takken gaat; '
+            'staan ze tegelijk in de DOM, dan is het wel fout')
+
+    # Voor 'opgevraagd maar nergens gezet' telt het hele bestand mee: een id dat
+    # een script opbouwt bestaat straks echt in de DOM.
+    bekend = set(vaste_ids(s))
     gevraagd = set(re.findall(r'getElementById\(\s*["\']([^"\']+)["\']\s*\)', s))
     gevraagd |= set(re.findall(r'\$\(\s*["\']([^"\']+)["\']\s*\)', s))
     ontbreekt = sorted(i for i in gevraagd - bekend if '${' not in i)
