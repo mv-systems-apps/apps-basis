@@ -33,6 +33,8 @@ Werkwijze, en die geldt de hele sessie:
   en andere inhoud.
 - Ik werk vrijwel altijd op mijn telefoon, Chrome op Android. Houd daar
   rekening mee bij alles wat je over bediening of formaat besluit.
+- Meld direct als een wijziging nieuwe-chat.txt of iets in apps-basis
+  (conventies.md, leesmij.md, check_app.py) achterhaald maakt.
 
 Na elke wijziging aan een app:
   python3 apps-basis/check_app.py <app>.html --basis apps-basis
