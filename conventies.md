@@ -225,7 +225,9 @@ voorstellen om ze gelijk te trekken.
   toegang en leest hij het bestand; pas daarna is er een kopie. Beide apps
   werken hierin gelijk. Dat geldt in events ook zonder werkmap: ook daar geen
   kopie zonder stempel, zodat je nooit een verouderde lijst ziet die er gewoon
-  uitziet. Het moment van de kopie staat overal als dd-mm-jjjj uu:mm.
+  uitziet. Het moment van de kopie staat er altijd, met en zonder toegang, en
+  verder niets: 'vandaag 17:45', 'gisteren 09:12' of '14-10-2026 20:03'
+  (dezelfde functie kopieTijd in beide apps, op de kalenderdag).
 
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
