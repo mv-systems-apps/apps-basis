@@ -223,7 +223,9 @@ voorstellen om ze gelijk te trekken.
   Alleen een kopie **met stempel** telt. Is er geen (de eerste start, of in
   events een oude kopie van voor 1352898-003), dan vraagt de app eerst om
   toegang en leest hij het bestand; pas daarna is er een kopie. Beide apps
-  werken hierin gelijk.
+  werken hierin gelijk. Dat geldt in events ook zonder werkmap: ook daar geen
+  kopie zonder stempel, zodat je nooit een verouderde lijst ziet die er gewoon
+  uitziet. Het moment van de kopie staat overal als dd-mm-jjjj uu:mm.
 
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
