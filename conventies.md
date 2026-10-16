@@ -197,12 +197,29 @@ map `tests/`). De gedeelde leesmij staat hier in `apps-basis/leesmij.md`;
 Deze verschillen zijn geen slordigheid. Niet gladstrijken, niet opnieuw
 voorstellen om ze gelijk te trekken.
 
-- **Opslag.** Golf houdt zijn gegevens in localStorage met handmatige backup:
-  rechtstreeks naar bestanden schrijven vraagt telkens opnieuw toestemming, en
-  een toestemmingsprompt midden op de baan is onacceptabel. De backup­herinnering
-  staat op dagelijks of 1 nieuwe ronde, dus het gat is hooguit één ronde.
-  Trends en events schrijven wél rechtstreeks naar bestanden (File System
-  Access, werkmap of gekoppeld bestand), want daar zit je rustig.
+- **Opslag: waar staat de waarheid.** Eén principe voor alle drie: **lezen uit
+  de browser, pas om toestemming vragen als er naar een bestand geschreven moet
+  worden.** De browser onthoudt een toestemming voor een map maar tot de app
+  dicht is (Edge op Android heeft geen 'Toestaan bij elk bezoek'), en ook alleen
+  lezen vraagt toestemming. De echte keuze per app is waar de waarheid staat:
+
+  | | golf-score | events | trends |
+  |---|---|---|---|
+  | waarheid | in de browser | het bestand in de werkmap | de bestanden in de werkmap |
+  | naar een bestand | bij een backup | bij elke wijziging | bij elke wijziging |
+  | waarom | geen toestemmingsvraag midden op de baan; de backupherinnering houdt het gat op hooguit één ronde | MacroDroid leest het bestand en moet de nieuwste stand zien; noodbewerking in een teksteditor | noodbewerking in een teksteditor; de bestanden zijn het archief |
+
+  Events en trends houden in IndexedDB een kopie om te lezen, die bij elk lezen
+  en opslaan wordt bijgewerkt. Zonder toestemming tonen ze die kopie; bij de
+  eerste wijziging, of met 'Opnieuw inlezen', vragen ze om toegang en lezen ze
+  eerst het bestand zelf, want het bestand wint altijd. Uit de kopie wordt nooit
+  naar een bestand geschreven.
+
+  De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
+  localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
+  moment worden weggeveegd); events en trends gebruiken IndexedDB, voor de
+  verwijzing naar de werkmap en voor de leeskopie. De drie apps delen één
+  localStorage van ongeveer 5 MB; die is in de praktijk van golf.
 - **Schrijfstijl van de code.** Golf en trends gebruiken `const`/`let` en
   `async`; events gebruikt `var` en `function` met promises. Nieuwe code volgt
   de stijl van het bestand waarin ze terechtkomt, niet die van de buurapp.
