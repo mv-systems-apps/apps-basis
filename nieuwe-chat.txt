@@ -35,6 +35,11 @@ Werkwijze, en die geldt de hele sessie:
   rekening mee bij alles wat je over bediening of formaat besluit.
 - Meld direct als een wijziging nieuwe-chat.txt of iets in apps-basis
   (conventies.md, leesmij.md, check_app.py) achterhaald maakt.
+- Haal eerst de laatste stand op (git pull) voordat je verder bouwt: er
+  werken soms andere chats aan dezelfde repo.
+- Golf: lees eerst golf-score/tests/LEESMIJ.md en CONTROLELIJST.md, en draai
+  na elke inhoudelijke wijziging de volledige suite. De repo's zijn openbaar:
+  zet er nooit een backup met namen in.
 
 Na elke wijziging aan een app:
   python3 apps-basis/check_app.py <app>.html --basis apps-basis
@@ -50,25 +55,30 @@ events
   sw-events.js         service worker
   events_lite.js       de MacroDroid-macro
   zelftest.html        780 controles, in de browser (via http, niet vanaf schijf)
-  events-tests.cjs     313 controles, met node:  node events-tests.cjs
+  events-tests.cjs     329 controles, 17 groepen, met node:  node events-tests.cjs
   zt_run.js            draait zelftest.html in Chromium op telefoonformaat;
                        met APPMUT=/van=>naar/ sloop je de app onderweg, zodat
                        te zien is of een controle werkelijk rood wordt
-  mutant.js            de mutatieloop: ~140 mutaties, laat per mutatie zien
+  mutant.js            de mutatieloop: ~150 mutaties, laat per mutatie zien
                        welke controles rood worden. Eén mutatie natellen:
                        node mutant.js "deel van de naam"
   update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
 
 golf-score
   golf-score.html      de app, met de twee Word-handleidingen en README.md
-  sw-golf-score.js, de iconen, update_cache_version.py
-  (geen node-bundel)
+  sw-golf-score.js, de iconen
+  update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
+  tests/               de testsuite: de echte app in Chromium, plus node-controles.
+                       Lees eerst tests/LEESMIJ.md en tests/CONTROLELIJST.md.
+                       Alles:  python3 tests/run-alles.py   (ongeveer 50 minuten)
+                       Eén:    python3 tests/test-<naam>.py
+                       De rondes erin zijn geanonimiseerd (Testspeler, Medespeler).
 
 trends
   trends.html          de app
   sw-trends.js
-  trends-tests.cjs     239 controles, 19 groepen:  node trends-tests.cjs
-  update_cache_version.py
+  trends-tests.cjs     269 controles, 21 groepen:  node trends-tests.cjs
+  update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
 
 apps-basis
   conventies.md        de bindende afspraken. Lees dit eerst.
@@ -108,5 +118,6 @@ WAT NIET MAG VERANDEREN ZONDER DAT IK HET VRAAG
 - Cache-opruiming mag alleen de eigen caches wissen: de drie apps delen één
   origin, dus de caches van de buurapps staan er ook in.
 - Geen externe scripts, geen gegevens die de app verlaten.
-- De cachenamen verschillen bewust per app: golf gebruikt een hash, trends
-  en events een oplopend nummer. Niet gelijktrekken.
+- De drie service workers doen hetzelfde (conventies.md, paragraaf 3). Een
+  wezenlijke wijziging aan de een hoort in alle drie; het enige bewuste
+  verschil is dat golf bij een update tot drie keer probeert.

@@ -35,6 +35,22 @@ hoort er een `blokken/<naam>.js` naast te liggen.
    telefoon kan dat met de GitHub-app; het kan ook vanuit de sessie gebeuren,
    en dan is er niets meer zelf te uploaden.
 
+## Tests per app
+
+- **events:** `node events-tests.cjs`, en `zelftest.html` in de browser (via `zt_run.js`).
+- **trends:** `node trends-tests.cjs`.
+- **golf-score:** de map `tests/`; lees eerst `tests/LEESMIJ.md` en
+  `tests/CONTROLELIJST.md`. Alles draaien: `python3 tests/run-alles.py` (ongeveer
+  50 minuten).
+
+Een nieuwe test moet falen op de vorige versie; laat zien dát hij faalt.
+
+## Service workers
+
+De drie service workers doen hetzelfde; de lijst staat in `conventies.md`, paragraaf 3.
+Wijzig je de service worker, verhoog dan ook `CACHE_VERSION` met
+`update_cache_version.py`.
+
 ## Bestandsnamen
 
 De service worker heet `sw-<stam>.js` — de naam van het app-bestand zonder

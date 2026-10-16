@@ -102,8 +102,10 @@ Plaats van het stempel per app:
 ## 3. App-shell en PWA
 
 Elke app-repo bevat: `<app>.html`, `index.html` (doorverwijzing),
-`manifest.json`, `sw-<stam>.js`, `icon.svg`, `update_cache_version.py`,
-`LEESMIJ.md`.
+`manifest.json`, `sw-<stam>.js`, `icon.svg`, `update_cache_version.py` en de
+tests van die app (events en trends een `<app>-tests.cjs` naast de app, golf een
+map `tests/`). De gedeelde leesmij staat hier in `apps-basis/leesmij.md`;
+`maak_zips.py` legt in elke back-upzip een eigen `LEESMIJ.txt`.
 
 - **Naam van de service worker:** `sw-<stam>.js`, waarbij `<stam>` de naam van
   het app-bestand is zonder `.html` — dus `sw-golf-score.js`, `sw-trends.js` en
@@ -126,14 +128,45 @@ Elke app-repo bevat: `<app>.html`, `index.html` (doorverwijzing),
 - **Layout:** vaste kop, vast onderdeel (tabbalk of niets), scrollend midden.
   Zo scrollt de navigatie niet weg op de telefoon.
 - **Strategie van de service worker:** stale-while-revalidate. Serveer uit de cache, ververs op
-  de achtergrond. Daardoor hoeft `sw.js` niet bij elke inhoudswijziging mee.
-- **Cachenaam:** golf gebruikt een hash van de bestanden, trends en events een
-  oplopend nummer. Beide voldoen; niet gelijktrekken.
+  de achtergrond. Daardoor hoeft de service worker niet bij elke inhoudswijziging mee.
+- **De drie service workers doen hetzelfde** (gelijkgetrokken op 16-10-2026), elk in
+  de schrijfstijl van de eigen app. Wijzig je hier iets wezenlijks, doe het dan in alle
+  drie en pas deze lijst aan:
+  - alleen de eigen bestanden afhandelen (origin én pad), alleen uit de eigen cache lezen,
+    alleen eigen oude caches opruimen;
+  - **eerst de eigen cache, dan het netwerk**: zo weet het netwerkverzoek welke rol het
+    heeft (verversing op de achtergrond of het antwoord zelf) en welke grens erbij hoort;
+  - **één kopie per pad**: opzoeken en bewaren onder het pad zonder toevoeging achter
+    het vraagteken, voor elk eigen bestand;
+  - een verzoek met `cache: 'reload'` of `'no-store'` gaat altijd naar het netwerk en
+    wordt niet bewaard (zonder netwerk: een foutcode, niet de oude kopie);
+  - **drie tijdsgrenzen**, en een verzoek wordt bij de grens echt afgebroken:
+    10 s bij een cachemisser en bij elke ophaalpoging van de installatie, 3 s bij een
+    paginaverzoek dat de cache mist terwijl de app wel bewaard is (dan de bewaarde app),
+    60 s voor de achtergrondverversing bij een cachetreffer;
+  - de achtergrondverversing van de **pagina** gaat met `cache: 'no-cache'`: GitHub
+    Pages laat een bestand 10 minuten bewaren, en anders kwam vlak na een push de
+    oude versie terug in de cache;
+  - staat er een verse kopie van de pagina in de cache, dan krijgt elk open venster het
+    bericht `kopieVernieuwd`;
+  - de installatie slaagt alleen als het app-bestand binnen is; een bijbestand dat niet
+    binnenkomt, wordt overgenomen uit de nieuwste vorige eigen cache; een mislukte
+    installatie laat geen lege cache achter en wist een bestaande niet;
+  - geen `skipWaiting` bij installeren, alleen op verzoek van de app (`nuOverstappen`).
+- **Cachenaam:** een teller, met de naam ervan afgeleid:
+  `const CACHE_VERSION = 29;` en `const CACHE_NAME = 'trends-v' + CACHE_VERSION;`
+  (prefix `golf-score-`, `trends-`, `events-`). `update_cache_version.py` hoogt alleen
+  die teller op, en dat hoort zodra de service worker zelf wijzigt (of de lijst met
+  appbestanden). Anders installeert de nieuwe in dezelfde cache waaruit de oude nog
+  bedient. Voor een wijziging aan alleen de app is het niet nodig. Golf rekende tot
+  16-10-2026 een hash uit over de appbestanden; daar zat de service worker zelf niet in,
+  dus juist bij een wijziging daaraan bleef de naam gelijk.
 - **Nieuwe-versie-melding:** `checkAppUpdate` vergelijkt het stempel van de
   draaiende app met het stempel in de kopie in de service-worker-cache.
   Vaste eisen:
   - alleen de cache lezen, geen netwerkverkeer;
-  - pas 4 s na start, plus bij `visibilitychange`;
+  - direct bij het bericht `kopieVernieuwd` van de service worker, en als vangnet
+    4 s na start en bij `visibilitychange`;
   - alleen de eigen cache-prefix (`golf-score-`, `trends-`, `events-`) — de
     cache is van het hele domein, dus de andere apps staan er ook in. Geen
     eigen cache betekent niets melden, en uitdrukkelijk GEEN terugval op alle
@@ -175,7 +208,11 @@ voorstellen om ze gelijk te trekken.
   de stijl van het bestand waarin ze terechtkomt, niet die van de buurapp.
 - **Kleuren.** Golf goud op groen, trends teal, events blauw. Per app eigen
   accentkleur; alleen typografie en tabelopmaak zijn gedeeld.
-- **Cachenaam.** Zie hierboven.
+- **Installatiepogingen.** Golf probeert elk bestand bij een update tot drie keer
+  (elk met de grens van 10 s), trends en events één keer. Golf gebruik je op de baan:
+  bij wisselend bereik redt een directe nieuwe poging de update, anders komt de
+  volgende kans pas bij de volgende opening. Trends en events gebruik je meestal
+  thuis; daar zou het bij een verbinding die echt hangt alleen langer wachten zijn.
 
 ---
 
