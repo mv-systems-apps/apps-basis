@@ -51,6 +51,12 @@ De drie service workers doen hetzelfde; de lijst staat in `conventies.md`, parag
 Wijzig je de service worker, verhoog dan ook `CACHE_VERSION` met
 `update_cache_version.py`.
 
+## Versie-omzetter
+
+`versie-omzetter.html` zet een versiestempel om naar de datum en terug
+(`13527DA-08B` = 26-8-2026, wijziging 139). Openen in een browser; er is niets
+voor nodig.
+
 ## Bestandsnamen
 
 De service worker heet `sw-<stam>.js` — de naam van het app-bestand zonder

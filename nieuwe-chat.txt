@@ -86,6 +86,8 @@ apps-basis
   check_app.py         controleert een app tegen de conventies en waarschuwt
                        als het versiestempel vergeten is
   maak_zips.py         back-upzip per app:  python3 maak_zips.py
+  versie-omzetter.html versiestempel <-> datum, in de browser. Op de telefoon:
+                       de kopie als artifact in je claude.ai-overzicht.
   nieuwe-chat.txt      dit bestand
 
 
