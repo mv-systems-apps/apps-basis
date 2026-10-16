@@ -7,6 +7,12 @@ nooit door elkaar lopen. Daarom wordt hier per app apart gelopen en wordt na het
 inpakken teruggelezen welke app er werkelijk in zit: klopt de titel in
 index.html niet met de app, dan staat dat in de uitvoer.
 
+In de zip komen precies de bestanden die in git staan, met hun submappen (zoals
+tests/ van golf), in de vorm waarin ze nu in de werkmap staan. Wat niet in git
+staat, komt er nooit in: zo belandt een lokale backup met namen
+(tests/rondes_backup.json) niet in een zip. Is de map geen git-clone, dan alleen
+de losse bestanden in de hoofdmap, zoals voorheen.
+
 In elke zip komt een LEESMIJ.txt met het commit waar de inhoud bij hoort, het
 versiestempel, en of er op dat moment nog niet-gecommitte wijzigingen in de
 werkmap stonden.
@@ -43,7 +49,9 @@ APPS = {
         'hoofd': 'golf-score.html',
         'stempel': 'onderaan Instellingen',
         'extra': ('De twee Word-documenten zijn de handleidingen; README.md\n'
-                  'beschrijft de app.\n'),
+                  'beschrijft de app. tests/ is de testsuite: lees eerst\n'
+                  'tests/LEESMIJ.md en tests/CONTROLELIJST.md. Alles draaien:\n'
+                  '  python3 tests/run-alles.py   (ongeveer 50 minuten)\n'),
     },
     'trends': {
         'hoofd': 'trends.html',
@@ -68,6 +76,17 @@ APPS = {
 def git(pad, *args):
     r = subprocess.run(['git', '-C', str(pad), *args], capture_output=True, text=True)
     return r.stdout.strip() if r.returncode == 0 else ''
+
+
+def bestanden_van(bron):
+    """De bestanden voor de zip, als (pad, naam in de zip). In een clone wat git
+    volgt, met submappen; anders alleen de losse bestanden in de hoofdmap."""
+    gevolgd = git(bron, 'ls-files', '-z')
+    if gevolgd:
+        namen = sorted(n for n in gevolgd.split('\0') if n)
+        return [(bron / n, n) for n in namen if (bron / n).is_file()]
+    return [(q, q.name) for q in sorted(bron.iterdir())
+            if q.is_file() and not q.name.startswith('.')]
 
 
 def main():
@@ -118,11 +137,10 @@ def main():
                    '']
 
         doel = naar / f'{naam}-{datum}.zip'
-        bestanden = sorted(q for q in bron.iterdir()
-                           if q.is_file() and not q.name.startswith('.'))
+        bestanden = bestanden_van(bron)
         with zipfile.ZipFile(doel, 'w', zipfile.ZIP_DEFLATED) as z:
-            for q in bestanden:
-                z.write(q, q.name)
+            for q, naam_in_zip in bestanden:
+                z.write(q, naam_in_zip)
             z.writestr('LEESMIJ.txt', '\n'.join(regels))
 
         # Terugkijken: zit er werkelijk de JUISTE app in?
