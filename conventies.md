@@ -209,11 +209,17 @@ voorstellen om ze gelijk te trekken.
   | naar een bestand | bij een backup | bij elke wijziging | bij elke wijziging |
   | waarom | geen toestemmingsvraag midden op de baan; de backupherinnering houdt het gat op hooguit één ronde | MacroDroid leest het bestand en moet de nieuwste stand zien; noodbewerking in een teksteditor | noodbewerking in een teksteditor; de bestanden zijn het archief |
 
-  Events en trends houden in IndexedDB een kopie om te lezen, die bij elk lezen
-  en opslaan wordt bijgewerkt. Zonder toestemming tonen ze die kopie; bij de
-  eerste wijziging, of met 'Opnieuw inlezen', vragen ze om toegang en lezen ze
-  eerst het bestand zelf, want het bestand wint altijd. Uit de kopie wordt nooit
-  naar een bestand geschreven.
+  Events en trends schrijven elke wijziging meteen weg: elke nieuwe waarde of
+  wijziging moet direct veilig staan. Golf doet dat per ronde, bij de backup.
+
+  Events en trends houden in IndexedDB een kopie om te lezen, met de stempel
+  (wijzigingstijd en grootte) van het bestand, bijgewerkt bij elk lezen en
+  opslaan. Zonder toestemming tonen ze die kopie en kun je gewoon bewerken; pas
+  bij het **opslaan** vragen ze om toegang (annuleren kost dus geen vraag). De
+  botsingscontrole vergelijkt dan het bestand met de stempel uit de kopie: is
+  het buiten de app gewijzigd (een noodbewerking), dan wordt er niets
+  overschreven zonder vraag. 'Opnieuw inlezen' vraagt om toegang en leest het
+  bestand. Uit de kopie wordt nooit naar een bestand geschreven.
 
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
