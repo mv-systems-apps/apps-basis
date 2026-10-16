@@ -31,8 +31,11 @@ Werkwijze, en die geldt de hele sessie:
 - Nooit twee apps in dezelfde map: index.html, manifest.json, icon.svg en
   update_cache_version.py bestaan in alle drie de repo's met dezelfde naam
   en andere inhoud.
-- Ik werk vrijwel altijd op mijn telefoon, Chrome op Android. Houd daar
-  rekening mee bij alles wat je over bediening of formaat besluit.
+- Ik werk vrijwel altijd op mijn telefoon, Microsoft Edge op Android, met
+  de apps geïnstalleerd op het beginscherm. Houd daar rekening mee bij alles
+  wat je over bediening, formaat of toestemmingen besluit: Edge is op Chromium
+  gebouwd, maar mist sommige keuzes van Chrome (zoals 'Toestaan bij elk
+  bezoek' voor een map).
 - Meld direct als een wijziging nieuwe-chat.txt of iets in apps-basis
   (conventies.md, leesmij.md, check_app.py) achterhaald maakt.
 - Haal eerst de laatste stand op (git pull) voordat je verder bouwt: er
