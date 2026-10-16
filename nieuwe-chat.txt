@@ -57,8 +57,8 @@ events
   events.html          de app
   sw-events.js         service worker
   events_lite.js       de MacroDroid-macro
-  zelftest.html        817 controles, in de browser (via http, niet vanaf schijf)
-  events-tests.cjs     348 controles, 18 groepen, met node:  node events-tests.cjs
+  zelftest.html        827 controles, in de browser (via http, niet vanaf schijf)
+  events-tests.cjs     350 controles, 18 groepen, met node:  node events-tests.cjs
   zt_run.js            draait zelftest.html in Chromium op telefoonformaat;
                        met APPMUT=/van=>naar/ sloop je de app onderweg, zodat
                        te zien is of een controle werkelijk rood wordt

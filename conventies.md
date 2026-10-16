@@ -220,6 +220,10 @@ voorstellen om ze gelijk te trekken.
   het buiten de app gewijzigd (een noodbewerking), dan wordt er niets
   overschreven zonder vraag. 'Opnieuw inlezen' vraagt om toegang en leest het
   bestand. Uit de kopie wordt nooit naar een bestand geschreven.
+  Alleen een kopie **met stempel** telt. Is er geen (de eerste start, of in
+  events een oude kopie van voor 1352898-003), dan vraagt de app eerst om
+  toegang en leest hij het bestand; pas daarna is er een kopie. Beide apps
+  werken hierin gelijk.
 
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
