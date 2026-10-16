@@ -91,6 +91,8 @@ apps-basis
   maak_zips.py         back-upzip per app:  python3 maak_zips.py
   versie-omzetter.html versiestempel <-> datum, in de browser. Op de telefoon:
                        de kopie als artifact in je claude.ai-overzicht.
+  zelfde_code.js       bewijst dat alleen commentaar is gewijzigd:
+                       node zelfde_code.js oud.html nieuw.html  (npm i acorn)
   nieuwe-chat.txt      dit bestand
 
 

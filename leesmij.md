@@ -57,6 +57,14 @@ Wijzig je de service worker, verhoog dan ook `CACHE_VERSION` met
 (`13527DA-08B` = 26-8-2026, wijziging 139). Openen in een browser; er is niets
 voor nodig.
 
+## Alleen commentaar gewijzigd?
+
+`zelfde_code.js` vergelijkt twee versies van een app-bestand zonder
+commentaar: `node zelfde_code.js oud.html nieuw.html`. Gelijk betekent dat
+een opschoning van het commentaar niets aan de code heeft veranderd. Het
+versiestempel pas daarna ophogen, want tekst buiten de scripts moet gelijk
+zijn. Nodig: `npm i acorn`.
+
 ## Bestandsnamen
 
 De service worker heet `sw-<stam>.js` — de naam van het app-bestand zonder
