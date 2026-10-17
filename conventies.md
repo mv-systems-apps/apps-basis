@@ -229,6 +229,12 @@ voorstellen om ze gelijk te trekken.
   verder niets: 'vandaag 17:45', 'gisteren 09:12' of '14-10-2026 20:03'
   (dezelfde functie kopieTijd in beide apps, op de kalenderdag).
 
+  Terwijl de app open staat, kijken beide bij elke terugkeer naar de app
+  (zichtbaarheid en focus) of een gelezen bestand buiten de app is gewijzigd.
+  Zo ja, dan lezen ze opnieuw in en melden dat; niet zonder toegang, niet
+  tijdens een eigen schrijfactie en niet over openstaande invoer heen (events:
+  kijkExtern, trends: kijkExtern).
+
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk
   moment worden weggeveegd); events en trends gebruiken IndexedDB, voor de

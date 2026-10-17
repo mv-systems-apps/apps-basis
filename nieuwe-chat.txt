@@ -82,7 +82,7 @@ golf-score
 trends
   trends.html          de app
   sw-trends.js
-  trends-tests.cjs     301 controles, 22 groepen:  node trends-tests.cjs
+  trends-tests.cjs     312 controles, 23 groepen:  node trends-tests.cjs
   update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
 
 apps-basis
