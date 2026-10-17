@@ -231,9 +231,12 @@ voorstellen om ze gelijk te trekken.
 
   Terwijl de app open staat, kijken beide bij elke terugkeer naar de app
   (zichtbaarheid en focus) of een gelezen bestand buiten de app is gewijzigd.
-  Zo ja, dan lezen ze opnieuw in en melden dat; niet zonder toegang, niet
-  tijdens een eigen schrijfactie en niet over openstaande invoer heen (events:
-  kijkExtern, trends: kijkExtern).
+  Zo ja, dan vragen ze eerst, zoals een editor: 'Opnieuw laden?' met 'Nee,
+  houd wat ik zie'. Tot je laadt staat er een balk dat je de versie van ervoor
+  ziet, met opnieuw laden; dezelfde wijziging geeft geen tweede vraag. Niet
+  zonder toegang, niet tijdens een eigen schrijfactie en niet over openstaande
+  invoer heen (kijkExtern in beide). Overschrijf je daarna toch, dan gaat de
+  versie van buiten eerst naar de backup, ook als er die dag al een was.
 
   De techniek in de browser verschilt bewust: golf bewaart zijn gegevens in
   localStorage, omdat opslaan daar direct af is (op de baan kan de app elk

@@ -58,8 +58,8 @@ events
   events.html          de app
   sw-events.js         service worker
   events_lite.js       de MacroDroid-macro
-  zelftest.html        850 controles, in de browser (via http, niet vanaf schijf)
-  events-tests.cjs     364 controles, 18 groepen, met node:  node events-tests.cjs
+  zelftest.html        861 controles, in de browser (via http, niet vanaf schijf)
+  events-tests.cjs     373 controles, 18 groepen, met node:  node events-tests.cjs
   zt_run.js            draait zelftest.html in Chromium op telefoonformaat;
                        met APPMUT=/van=>naar/ sloop je de app onderweg, zodat
                        te zien is of een controle werkelijk rood wordt
@@ -82,7 +82,7 @@ golf-score
 trends
   trends.html          de app
   sw-trends.js
-  trends-tests.cjs     312 controles, 23 groepen:  node trends-tests.cjs
+  trends-tests.cjs     321 controles, 23 groepen:  node trends-tests.cjs
   update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
 
 apps-basis
