@@ -229,16 +229,13 @@ voorstellen om ze gelijk te trekken.
   verder niets: 'vandaag 17:45', 'gisteren 09:12' of '14-10-2026 20:03'
   (dezelfde functie kopieTijd in beide apps, op de kalenderdag).
 
-  Terwijl de app open staat, kijken beide bij elke terugkeer naar de app
-  (zichtbaarheid en focus) of een gelezen bestand buiten de app is gewijzigd.
-  Zo ja, dan lezen ze niet zelf in maar tonen een oranje balk: 'Bestand is
-  buiten de app gewijzigd.' [Inlezen] [Annuleren]. Dezelfde wijziging meldt
-  zich niet opnieuw. Botst opslaan daarmee: '… Jouw wijziging is niet
-  opgeslagen.' [Toch opslaan] [Annuleren]; Toch opslaan zet eerst de versie van
-  buiten in de backup (ook als er die dag al een was), Annuleren leest het
-  bestand in. Geen vraagvensters. Niet zonder toegang, niet tijdens een eigen
-  schrijfactie en niet over een open venster heen; gaat het laatste venster
-  dicht, dan kijkt de app alsnog (kijkExtern in beide).
+  Een wijziging buiten de app wordt niet bij terugkeer gecontroleerd (dat gaf
+  te veel onduidelijke meldingen). Je leest zelf opnieuw in (events:
+  Instellingen > Bestand, trends: Vernieuwen). Bij het opslaan vangt de
+  botsingscontrole een wijziging van buiten op, met een oranje balk: '… Jouw
+  wijziging is niet opgeslagen.' [Toch opslaan] [Annuleren]. Toch opslaan zet
+  eerst de versie van buiten in de backup (ook als er die dag al een was),
+  Annuleren leest het bestand in. Geen vraagvensters.
 
   Oranje meldingen: één korte zin wat er is, daarna de knoppen. Annuleren alleen
   waar je echt kiest; nooit een knop die stil een wijziging weggooit.
