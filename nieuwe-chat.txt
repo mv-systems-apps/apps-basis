@@ -40,8 +40,9 @@ Werkwijze, en die geldt de hele sessie:
   (conventies.md, leesmij.md, check_app.py) achterhaald maakt.
 - Haal eerst de laatste stand op (git pull) voordat je verder bouwt: er
   werken soms andere chats aan dezelfde repo.
-- Golf: lees eerst golf-score/tests/LEESMIJ.md en CONTROLELIJST.md, en draai
-  na elke inhoudelijke wijziging de volledige suite. De repo's zijn openbaar:
+- Golf: lees eerst golf-score/tests/LEESMIJ.md en CONTROLELIJST.md. Na elke
+  inhoudelijke wijziging de snelle run (run-alles.py --snel, ~20 min); vóór
+  elke push de volledige run (~50 min). De repo's zijn openbaar:
   zet er nooit een backup met namen in.
 
 Na elke wijziging aan een app:
@@ -73,7 +74,8 @@ golf-score
   update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
   tests/               de testsuite: de echte app in Chromium, plus node-controles.
                        Lees eerst tests/LEESMIJ.md en tests/CONTROLELIJST.md.
-                       Alles:  python3 tests/run-alles.py   (ongeveer 50 minuten)
+                       Snel:   python3 tests/run-alles.py --snel  (na elke wijziging)
+                       Alles:  python3 tests/run-alles.py   (vóór elke push, ~50 min)
                        Eén:    python3 tests/test-<naam>.py
                        De rondes erin zijn geanonimiseerd (Testspeler, Medespeler).
 

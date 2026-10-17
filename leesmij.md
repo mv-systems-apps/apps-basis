@@ -40,8 +40,9 @@ hoort er een `blokken/<naam>.js` naast te liggen.
 - **events:** `node events-tests.cjs`, en `zelftest.html` in de browser (via `zt_run.js`).
 - **trends:** `node trends-tests.cjs`.
 - **golf-score:** de map `tests/`; lees eerst `tests/LEESMIJ.md` en
-  `tests/CONTROLELIJST.md`. Alles draaien: `python3 tests/run-alles.py` (ongeveer
-  50 minuten).
+  `tests/CONTROLELIJST.md`. Na elke wijziging `python3 tests/run-alles.py --snel`
+  (zonder de acht zware tests); vóór elke push de volledige run
+  `python3 tests/run-alles.py` (ongeveer 50 minuten).
 
 Een nieuwe test moet falen op de vorige versie; laat zien dát hij faalt.
 
