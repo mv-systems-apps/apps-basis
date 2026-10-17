@@ -231,8 +231,8 @@ voorstellen om ze gelijk te trekken.
 
   Terwijl de app open staat, kijken beide bij elke terugkeer naar de app
   (zichtbaarheid en focus) of een gelezen bestand buiten de app is gewijzigd.
-  Zo ja, dan vragen ze eerst, zoals een editor: 'Opnieuw laden?' met 'Nee,
-  houd wat ik zie'. Tot je laadt staat er een balk dat je de versie van ervoor
+  Zo ja, dan vragen ze eerst, zoals een editor: 'Opnieuw laden?' met 'Opnieuw
+  laden' en 'Nee'. Tot je laadt staat er een balk dat je de versie van ervoor
   ziet, met opnieuw laden; dezelfde wijziging geeft geen tweede vraag. Niet
   zonder toegang, niet tijdens een eigen schrijfactie en niet over openstaande
   invoer heen (kijkExtern in beide). Overschrijf je daarna toch, dan gaat de
