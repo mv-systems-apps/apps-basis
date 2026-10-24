@@ -1,0 +1,142 @@
+STARTINSTRUCTIE VOOR EEN NIEUWE CHAT
+====================================
+
+Een nieuwe chat begint met een lege werkmap: de clones van de vorige sessie
+zijn weg. Alles wat nodig is staat in GitHub, dus één bericht is genoeg.
+Plak het blok tussen de streepjes.
+
+
+--------------------------- PLAK DIT -----------------------------------
+
+Ik werk aan mijn drie apps. Haal deze repo's erbij en kloon ze, elk in zijn
+eigen map:
+
+  mv-systems-apps/events
+  mv-systems-apps/golf-score
+  mv-systems-apps/trends
+  mv-systems-apps/apps-basis
+
+Lees eerst apps-basis/conventies.md -- dat zijn de bindende afspraken voor
+alle drie de apps -- en daarna apps-basis/leesmij.md.
+
+Werkwijze, en die geldt de hele sessie:
+- Eerst analyse en een voorstel, pas wijzigen na mijn akkoord. Bij een
+  bouwtraject elke stap apart voorleggen.
+- Elke nieuwe test moet falen op de vorige versie. Laat zien dát hij faalt.
+- Claim geen browsertests die niet echt zijn uitgevoerd.
+- Performance meteen goed doen bij het bouwen. Kies je bewust de simpele
+  maar zwaardere variant, meld dat dan ongevraagd.
+- Versiestempel met de hand ophogen bij elke wijziging aan de app zelf,
+  niet via een script.
+- Nooit twee apps in dezelfde map: index.html, manifest.json, icon.svg en
+  update_cache_version.py bestaan in alle drie de repo's met dezelfde naam
+  en andere inhoud.
+- Ik werk vrijwel altijd op mijn telefoon, Microsoft Edge op Android, met
+  de apps geïnstalleerd op het beginscherm. Houd daar rekening mee bij alles
+  wat je over bediening, formaat of toestemmingen besluit: Edge is op Chromium
+  gebouwd, maar mist sommige keuzes van Chrome (zoals 'Toestaan bij elk
+  bezoek' voor een map).
+- Meld direct als een wijziging nieuwe-chat.txt of iets in apps-basis
+  (conventies.md, leesmij.md, check_app.py) achterhaald maakt.
+- Haal eerst de laatste stand op (git pull) voordat je verder bouwt: er
+  werken soms andere chats aan dezelfde repo.
+- Golf: lees eerst golf-score/tests/LEESMIJ.md en CONTROLELIJST.md. Na elke
+  inhoudelijke wijziging de snelle run (run-alles.py --snel, ~20 min); vóór
+  elke push de volledige run (~50 min). De repo's zijn openbaar:
+  zet er nooit een backup met namen in.
+
+Na elke wijziging aan een app:
+  python3 apps-basis/check_app.py <app>.html --basis apps-basis
+
+------------------------- EINDE PLAKBLOK -------------------------------
+
+
+WAT ER IN DE REPO'S STAAT
+-------------------------
+
+events
+  events.html          de app
+  sw-events.js         service worker
+  events_lite.js       de MacroDroid-macro
+  zelftest.html        1054 controles, in de browser (via http, niet vanaf schijf)
+  events-tests.cjs     388 controles, 18 groepen, met node:  node events-tests.cjs
+  zt_run.js            draait zelftest.html in Chromium op telefoonformaat;
+                       met APPMUT='van=>naar' sloop je de app onderweg, zodat
+                       te zien is of een controle werkelijk rood wordt
+  mutant.js            de mutatieloop over events-tests.cjs: laat per mutatie zien
+                       welke controles rood worden, en faalt (exitcode 1) als een
+                       mutatie niet meer aangrijpt of door niets wordt gevangen.
+                       Eén mutatie natellen: node mutant.js "deel van de naam"
+  update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
+
+golf-score
+  golf-score.html      de app, met de twee Word-handleidingen en README.md.
+                       Het script is in genummerde secties ingedeeld; de
+                       inhoudsopgave staat bovenaan het script. Lees die eerst en
+                       daarna alleen de sectie die je nodig hebt. Nieuwe code in de
+                       sectie van zijn onderwerp; tests/controle-opbouw.js bewaakt
+                       de regels (zie tests/LEESMIJ.md, 'Opbouw van het script').
+  sw-golf-score.js, de iconen
+  update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
+  tests/               de testsuite: de echte app in Chromium, plus node-controles.
+                       Lees eerst tests/LEESMIJ.md en tests/CONTROLELIJST.md.
+                       Snel:   python3 tests/run-alles.py --snel  (na elke wijziging)
+                       Alles:  python3 tests/run-alles.py   (vóór elke push, ~50 min)
+                       Eén:    python3 tests/test-<naam>.py
+                       De rondes erin zijn geanonimiseerd (Testspeler, Medespeler).
+
+trends
+  trends.html          de app
+  sw-trends.js
+  trends-tests.cjs     383 controles, 23 groepen:  node trends-tests.cjs
+  trends-browser.cjs   156 controles in Chromium op telefoonformaat: de vensters
+                       (meldingen, knoppen, focus) en wat er in de bestanden komt.
+                       node trends-browser.cjs ; MAP=<oude versie> om te laten
+                       zien wat er daar faalt. Exit-code 1 bij een fout.
+  update_cache_version.py   verhoogt alleen CACHE_VERSION, niet het stempel
+
+apps-basis
+  conventies.md        de bindende afspraken. Lees dit eerst.
+  leesmij.md           hoe de drie repo's samenhangen
+  check_app.py         controleert een app tegen de conventies en waarschuwt
+                       als het versiestempel vergeten is
+  maak_zips.py         back-upzip per app:  python3 maak_zips.py
+  versie-omzetter.html versiestempel <-> datum, in de browser. Op de telefoon:
+                       de kopie als artifact in je claude.ai-overzicht.
+  zelfde_code.js       bewijst dat alleen commentaar is gewijzigd:
+                       node zelfde_code.js oud.html nieuw.html  (npm i acorn)
+  nieuwe-chat.txt      dit bestand
+
+
+VERSIESTEMPELS
+--------------
+
+Formaat: HEX(yyyymmdd)-NNN, drie hex-cijfers volgnummer, elke dag opnieuw
+vanaf 001. Beide delen hebben een vaste lengte, dus gewone tekstvergelijking
+sorteert correct. Plaats per app:
+
+  golf-score   onderaan Instellingen
+  trends       onderaan het Bronnen-paneel
+  events       onderaan het instellingenscherm
+
+Het stempel gaat met de HAND omhoog. Een wijziging die niet in de
+app-bestanden landt (een losse test, een leesmij, een hulpscript) krijgt
+géén nieuw stempel: dat zou een nieuwe-versie-melding geven voor een uitgave
+waarin voor de gebruiker niets anders is. check_app.py is het vangnet en
+waarschuwt als het bestand is gewijzigd terwijl het stempel bleef staan.
+
+
+WAT NIET MAG VERANDEREN ZONDER DAT IK HET VRAAG
+-----------------------------------------------
+
+- Events: het puntkomma-bestand blijft de bron, met een plain-text editor te
+  bewerken. Geen JSON, geen nieuwe opslaglaag. Eén record is altijd één
+  regel.
+- Events: de berekening van de vijfde weekdag en de 29-februari-afspraak.
+  Die zijn vastgelegd met regressietests.
+- Cache-opruiming mag alleen de eigen caches wissen: de drie apps delen één
+  origin, dus de caches van de buurapps staan er ook in.
+- Geen externe scripts, geen gegevens die de app verlaten.
+- De drie service workers doen hetzelfde (conventies.md, paragraaf 3). Een
+  wezenlijke wijziging aan de een hoort in alle drie; het enige bewuste
+  verschil is dat golf bij een update tot drie keer probeert.
