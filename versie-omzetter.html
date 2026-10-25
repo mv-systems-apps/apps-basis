@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Versie ↔ datum</title>
+<style>
+  :root {
+    --green-deep:#1e3a2f; --gold:#a8892c; --paper:#f2f0e9; --white:#f7f5ee;
+    --muted:#6b7269; --green-light:#4b7a5c; --red:#b4432c; --hairline:#d8d4c6;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    margin:0; padding:20px 16px 40px; background:var(--paper); color:var(--green-deep);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  h1 {
+    font-size:20px; font-weight:800; color:var(--gold); text-transform:uppercase;
+    letter-spacing:.7px; line-height:1; margin:0 0 4px;
+  }
+  .uitleg { font-size:15px; color:var(--muted); margin:0 0 20px; line-height:1.5; }
+  .kaart {
+    background:var(--white); border:1px solid var(--hairline); border-radius:14px;
+    padding:16px; margin-bottom:16px;
+  }
+  label {
+    display:block; font-size:15px; font-weight:700; color:var(--muted);
+    margin-bottom:6px;
+  }
+  input {
+    width:100%; padding:12px 14px; font-size:20px; font-weight:700;
+    border:1px solid var(--hairline); border-radius:10px; background:var(--paper);
+    color:var(--green-deep); font-family:inherit;
+  }
+  input:focus { outline:2px solid var(--gold); outline-offset:-1px; }
+  .uit {
+    font-size:20px; font-weight:700; margin-top:12px; line-height:1.5;
+    min-height:30px;
+  }
+  .uit .fout { color:var(--red); font-weight:700; }
+  .bij { font-size:15px; color:var(--muted); font-weight:400; }
+  .knoppen { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  button {
+    flex:1; min-width:120px; padding:10px 14px; font-size:17px; font-weight:700;
+    border:1px solid var(--hairline); border-radius:10px; background:var(--paper);
+    color:var(--green-deep); font-family:inherit; cursor:pointer;
+  }
+  button.hoofd { background:var(--gold); border-color:var(--gold); color:#fff; }
+</style>
+</head>
+<body>
+
+<h1>Versie ↔ datum</h1>
+<p class="uitleg">
+  Het versiestempel van golf-score, trends en events is de datum in hexadecimaal,
+  gevolgd door een volgnummer per wijziging van die dag. <b>13527DA-08B</b> is dus
+  0x13527DA = 20260826, wijziging 0x08B = 139.
+</p>
+
+<div class="kaart">
+  <label for="versie">Versie → datum</label>
+  <input id="versie" type="text" placeholder="13527DA-08B" autocomplete="off"
+         spellcheck="false" oninput="naarDatum()">
+  <div id="uitDatum" class="uit"></div>
+</div>
+
+<div class="kaart">
+  <label for="datum">Datum → versie</label>
+  <input id="datum" type="text" placeholder="26-8-2026 of 2026-08-26" autocomplete="off"
+         spellcheck="false" oninput="naarVersie()">
+  <div id="uitVersie" class="uit"></div>
+  <div class="knoppen">
+    <button class="hoofd" onclick="vulVandaag()">Vandaag</button>
+    <button onclick="wisAlles()">Wissen</button>
+  </div>
+</div>
+
+<script>
+const MAANDEN = ['januari','februari','maart','april','mei','juni',
+                 'juli','augustus','september','oktober','november','december'];
+const DAGEN = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+
+// 20260826 -> "woensdag 26 augustus 2026"; geeft null bij een onmogelijke datum.
+function leesbaar(jjjjmmdd) {
+  const j = Math.floor(jjjjmmdd / 10000);
+  const m = Math.floor(jjjjmmdd / 100) % 100;
+  const d = jjjjmmdd % 100;
+  if (j < 2000 || j > 2999 || m < 1 || m > 12 || d < 1 || d > 31) return null;
+  const dt = new Date(j, m - 1, d);
+  // Bestaat 31 februari niet, dan rolt de datum door naar maart: dat vangen we hier.
+  if (dt.getFullYear() !== j || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+  return `${DAGEN[dt.getDay()]} ${d} ${MAANDEN[m - 1]} ${j}`;
+}
+
+function naarDatum() {
+  const ruw = (document.getElementById('versie').value || '').trim().toUpperCase();
+  const uit = document.getElementById('uitDatum');
+  if (!ruw) { uit.innerHTML = ''; return; }
+
+  // 'Versie ' ervoor mag, net als alleen het datumdeel zonder volgnummer.
+  const m = /^(?:VERSIE\s+)?([0-9A-F]+)(?:-([0-9A-F]+))?$/.exec(ruw);
+  if (!m) { uit.innerHTML = '<span class="fout">Geen geldig versiestempel.</span>'; return; }
+
+  const getal = parseInt(m[1], 16);
+  const datum = leesbaar(getal);
+  if (!datum) {
+    uit.innerHTML = `<span class="fout">0x${m[1]} = ${getal} — dat is geen datum.</span>`;
+    return;
+  }
+  const volg = m[2] ? parseInt(m[2], 16) : null;
+  uit.innerHTML = `${datum}`
+    + (volg !== null ? `<br><span class="bij">wijziging ${volg} van die dag (0x${m[2]})</span>` : '')
+    + `<br><span class="bij">0x${m[1]} = ${getal}</span>`;
+}
+
+function naarVersie() {
+  const ruw = (document.getElementById('datum').value || '').trim();
+  const uit = document.getElementById('uitVersie');
+  if (!ruw) { uit.innerHTML = ''; return; }
+
+  let j, mnd, d;
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(ruw);          // 2026-08-26
+  if (m) { j = +m[1]; mnd = +m[2]; d = +m[3]; }
+  else {
+    m = /^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/.exec(ruw);      // 26-8-2026
+    if (m) { d = +m[1]; mnd = +m[2]; j = +m[3]; }
+    else {
+      m = /^(\d{8})$/.exec(ruw);                              // 20260826
+      if (m) { j = +ruw.slice(0, 4); mnd = +ruw.slice(4, 6); d = +ruw.slice(6, 8); }
+    }
+  }
+  if (!m) { uit.innerHTML = '<span class="fout">Geen geldige datum.</span>'; return; }
+
+  const getal = j * 10000 + mnd * 100 + d;
+  const datum = leesbaar(getal);
+  if (!datum) { uit.innerHTML = '<span class="fout">Die datum bestaat niet.</span>'; return; }
+
+  const hex = getal.toString(16).toUpperCase();
+  uit.innerHTML = `${hex}-001`
+    + `<br><span class="bij">${datum} — eerste wijziging van die dag</span>`;
+}
+
+function vulVandaag() {
+  const nu = new Date();
+  const twee = n => String(n).padStart(2, '0');
+  document.getElementById('datum').value =
+    `${nu.getFullYear()}-${twee(nu.getMonth() + 1)}-${twee(nu.getDate())}`;
+  naarVersie();
+}
+
+function wisAlles() {
+  document.getElementById('versie').value = '';
+  document.getElementById('datum').value = '';
+  naarDatum(); naarVersie();
+}
+</script>
+</body>
+</html>
