@@ -12,7 +12,7 @@ bepaalt de scope).
 Meldt alleen wat er misgaat. Exitcode 1 bij fouten, 0 als alles goed is.
 """
 
-import sys, os, re, glob, shutil, subprocess, datetime
+import sys, os, re, glob, shutil, subprocess, datetime, base64, hashlib
 
 VOID = {'br','img','input','meta','link','hr','source','path','circle','line',
         'polyline','rect','polygon','use','ellipse','stop','area','col','base',
@@ -364,6 +364,26 @@ def check_veiligheid_pagina(s, naam):
         csp = m.group(1)
         # Na 'self' alleen https-adressen; een joker alleen vooraan voor subdomeinen van een
         # vast domein (https://*.1drv.com), nooit los (https://*) of voor een topdomein (*.com).
+        # Toegestaan (28-11-2026, conventies.md): bij script-src in plaats van 'unsafe-inline' de hash van elk eigen
+        # script ('sha256-…'). Dan moet elk script in de pagina precies zo'n hash hebben (anders doet de app niets),
+        # en zijn onclick="…" e.d. en <script src> niet toegestaan (die werken dan niet).
+        hashes = re.match(r"default-src 'none'; script-src 'self'((?: 'sha256-[A-Za-z0-9+/]{43}=')+); ", csp)
+        if hashes:
+            # Commentaar en scripts in één doorgang: '<!--' in de code van een script is geen HTML-commentaar.
+            delen = list(re.finditer(r'<!--[\s\S]*?-->|<script(\s[^>]*)?>([\s\S]*?)</script>', s, re.I))
+            inline = [m.group(2) for m in delen if m.group(0).lower().startswith('<script') and not re.search(r'\bsrc\s*=', m.group(1) or '', re.I)]
+            zonder_commentaar = re.sub(r'<!--[\s\S]*?-->|(<script(?:\s[^>]*)?>[\s\S]*?</script>)', lambda m: m.group(1) or '', s, flags=re.I)
+            nodig = {"'sha256-" + base64.b64encode(hashlib.sha256(t.encode('utf-8')).digest()).decode() + "'" for t in inline}
+            staat = set(hashes.group(1).split())
+            if nodig != staat:
+                fout(f'{naam}: de script-hash in de CSP klopt niet met het script (update_cache_version.py draaien)')
+            html = re.sub(r'<script(\s[^>]*)?>[\s\S]*?</script>', '', zonder_commentaar, flags=re.I)  # alleen de HTML, niet de code
+            tags = [re.sub(r'"[^"]*"|\'[^\']*\'', '""', t) for t in re.findall(r'<[a-z][a-z0-9-]*\b[^<>]*>', html, re.I)]
+            if any(re.search(r'\son[a-z]+\s*=', t, re.I) for t in tags):
+                fout(f'{naam}: met een script-hash werken onclick="…" e.d. in de HTML niet (addEventListener gebruiken)')
+            if re.search(r'<script\b[^>]*\bsrc\s*=', zonder_commentaar, re.I):
+                fout(f'{naam}: met een script-hash geen <script src> (conventies.md: één eigen script in de pagina)')
+            csp = csp.replace("script-src 'self'" + hashes.group(1), "script-src 'self' 'unsafe-inline'", 1)
         if not (csp == CSP_VAST or (csp.startswith(CSP_VAST + ' ') and re.fullmatch(r'( https://(\*\.)?[a-z0-9-]+(\.[a-z0-9-]+)+(/[^\s;\'"*]*)?)+', csp[len(CSP_VAST):]))):
             fout(f'{naam}: de Content-Security-Policy wijkt af van de vaste (conventies.md); '
                  'alleen achter connect-src \'self\' mogen https-adressen staan (joker alleen als *.domein.tld)')

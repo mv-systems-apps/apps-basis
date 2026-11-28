@@ -26,6 +26,20 @@ GOED = ('<!DOCTYPE html><html><head>\n<meta charset="utf-8">\n'
 check('de goede pagina: geen meldingen', meldingen(GOED), [])
 check('een extern https-adres achter connect-src mag', meldingen(GOED.replace("connect-src 'self'", "connect-src 'self' https://api.voorbeeld.nl")), [])
 check('een joker voor subdomeinen van een vast domein mag (thuis: OneDrive)', meldingen(GOED.replace("connect-src 'self'", "connect-src 'self' https://graph.microsoft.com https://*.1drv.com")), [])
+# Script-hash in plaats van 'unsafe-inline' (28-11-2026): mag, mits elke hash precies klopt.
+import base64, hashlib
+h = lambda t: "'sha256-" + base64.b64encode(hashlib.sha256(t.encode('utf-8')).digest()).decode() + "'"
+MET_HASH = GOED.replace("script-src 'self' 'unsafe-inline'", "script-src 'self' " + h('1'))
+check('script-hash in plaats van unsafe-inline, klopt: geen meldingen', meldingen(MET_HASH), [])
+check('script-hash: "online =" in een attribuut en een script in commentaar zijn geen fout', meldingen(MET_HASH.replace('<body>', '<body><p title="zet het online = klaar">x</p><!-- <script>5</script> -->')), [])
+for naam, kapot in [
+    ('script-hash klopt niet (script gewijzigd)', MET_HASH.replace('<script>1</script>', '<script>2</script>')),
+    ('script-hash ontbreekt voor een tweede script', MET_HASH.replace('</head>', '<script>3</script></head>')),
+    ('script-hash met onclick="…"', MET_HASH.replace('<body>', '<body><button onclick="x()">x</button>')),
+    ('script-hash met een extra bron', MET_HASH.replace("script-src 'self' ", "script-src 'self' https://cdn.voorbeeld.nl ")),
+    ('script-hash, een module-script zonder hash', MET_HASH.replace('</head>', '<script type="module">4</script></head>')),
+]:
+    check(f'geweigerd: {naam}', len(meldingen(kapot)) > 0, True)
 for naam, kapot in [
     ('zonder CSP', re.sub(r'<meta http-equiv[^>]*>\n', '', GOED)),
     ('zonder referrer-regel', GOED.replace('<meta name="referrer" content="no-referrer">\n', '')),

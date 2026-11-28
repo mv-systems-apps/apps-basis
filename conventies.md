@@ -122,6 +122,13 @@ aanmeldingen) van alle apps. Daarom, voor elke app, ook een nieuwe:
   <meta name="referrer" content="no-referrer">
   ```
 
+  Toegestaan (28-11-2026, eerst in thuis): bij `script-src` in plaats van `'unsafe-inline'` de hash van
+  elk eigen script (`'sha256-…'`). Dan draait alleen dat script; ingesmokkelde code (een `<script>` of
+  `onerror="…"` die door een fout als HTML in de pagina komt) niet. Voorwaarden: de hash klopt precies
+  (bij elke versie opnieuw uitrekenen, bv. in `update_cache_version.py`; `check_app.py` weigert een
+  verkeerde, anders doet de app niets), geen `onclick="…"` e.d. in de HTML en geen `<script src>`.
+  Niet verplicht: een app met veel `on…="…"` in de HTML (golf-score) houdt `'unsafe-inline'`.
+
 - **Gegevens nooit als HTML.** Namen, notities, bestandsinhoud en instellingen gaan via
   `textContent` of door de escape-functie van de app; alleen vaste tekst en SVG gaan als
   HTML (innerHTML, insertAdjacentHTML). Elke app heeft een test die alle vrije
